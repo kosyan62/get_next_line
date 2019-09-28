@@ -6,18 +6,13 @@
 /*   By: mgena <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/09/18 17:46:54 by mgena             #+#    #+#             */
-/*   Updated: 2019/09/24 22:54:35 by mgena            ###   ########.fr       */
+/*   Updated: 2019/09/25 16:12:45 by mgena            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
-#include <fcntl.h>
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <unistd.h>
-#include <stdlib.h>
 
-int	write_line(char **to, char *from)
+int		write_line(char **to, char *from)
 {
 	size_t bytes_to_write;
 
@@ -45,6 +40,8 @@ int		ft_myjoin(char **buff_fd, const int fd)
 	while ((ret = read(fd, buffer, BUFF_SIZE)) > 0)
 	{
 		tmp = ft_strjoin(buff_fd[fd], buffer);
+		if (tmp == NULL)
+			return (-1);
 		ft_strdel(&buff_fd[fd]);
 		buff_fd[fd] = tmp;
 		if (ft_strchr(buff_fd[fd], '\n') != NULL)
@@ -59,7 +56,7 @@ int		get_next_line(const int fd, char **line)
 	int			ret;
 	static char	*buff_fd[10240];
 
-	if (fd < 0 || line == NULL || fd > 10239)
+	if (fd < 0 || line == NULL || fd > 10239 || BUFF_SIZE < 1)
 		return (-1);
 	ret = ft_myjoin(buff_fd, fd);
 	if (ret < 0)
@@ -69,7 +66,7 @@ int		get_next_line(const int fd, char **line)
 		ft_strdel(&buff_fd[fd]);
 		return (0);
 	}
-	ret =  write_line(line, buff_fd[fd]);
+	ret = write_line(line, buff_fd[fd]);
 	if (ret == 0)
 		ft_strdel(&buff_fd[fd]);
 	else if (ret == -1)
